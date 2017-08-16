@@ -9,17 +9,24 @@ with open('data/driving_log.csv') as csvfile:
         lines.append(line)
 
 images, measurements = [], []
+correction_dict = {
+    0 : 0,
+    1: 0.2,
+    2: -0.2
+}
+
 for line in lines:
-    source_path = line[0]
-    filename = source_path.split('/')[-1]
-    current_path = './data/IMG/' + filename
-    image = cv2.imread(current_path)
-    images.append(image)
-    measurement = float(line[3])
-    measurements.append(measurement)
-    # augment data with a flipped version
-    images.append(cv2.flip(image, 1))
-    measurements.append(measurement * -1.0)
+    for i in range(3):
+        source_path = line[i]
+        filename = source_path.split('/')[-1]
+        current_path = './data/IMG/' + filename
+        image = cv2.imread(current_path)
+        images.append(image)
+        measurement = float(line[3]) + correction_dict[i]
+        measurements.append(measurement)
+        # augment data with a flipped version
+        images.append(cv2.flip(image, 1))
+        measurements.append(measurement * -1.0)
 
 X_train = np.array(images)
 y_train = np.array(measurements)
@@ -33,6 +40,6 @@ model.add(Flatten())
 model.add(Dense(1))
 
 model.compile(loss='mse', optimizer='adam')
-model.fit(X_train, y_train, validation_split=0.2, shuffle=True, nb_epoch=1)
+model.fit(X_train, y_train, validation_split=0.2, shuffle=True, nb_epoch=3)
 
 model.save('model.h5')

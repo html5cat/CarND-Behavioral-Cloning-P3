@@ -7,13 +7,13 @@ from sklearn.model_selection import train_test_split
 from keras.models import Sequential
 from keras.layers import Flatten, Dense, Lambda, Cropping2D
 
+epochs = 1
 correction_dict = {
     0 : 0,
-    1: 0.2,
-    2: -0.2
+    1: 0.15,
+    2: -0.15
 }
 ch, row, col = 3, 160, 320
-epochs = 1
 
 samples = []
 with open('data/driving_log.csv') as csvfile:
@@ -32,11 +32,11 @@ def generator(samples, batch_size = 32):
 
             images, angles = [], []
             for batch_sample in batch_samples:
-                # for i in range(3):
-                    file_path = './data/IMG/' + batch_sample[0].split('/')[-1]
+                for i in range(3):
+                    file_path = './data/IMG/' + batch_sample[i].split('/')[-1]
                     image = cv2.imread(file_path)
                     if image is not None:
-                        angle = float(line[3])# + correction_dict[i]
+                        angle = float(line[3]) + correction_dict[i]
                         images.append(image)
                         angles.append(angle)
                         images.append(cv2.flip(image, 1))
@@ -52,7 +52,7 @@ validation_generator = generator(validation_samples, batch_size = 32)
 
 
 model = Sequential()
-model.add(Lambda(lambda x: x/255 - 0.5, 
+model.add(Lambda(lambda x: (x / 255.0) - 0.5, 
                     input_shape=(row, col, ch)))
 model.add(Cropping2D(cropping=((70,25), (0,0))))
 model.add(Flatten())
@@ -60,7 +60,7 @@ model.add(Dense(1))
 
 model.compile(loss='mse', optimizer='adam')
 model.fit_generator(train_generator, 
-                    samples_per_epoch = len(train_samples) * 2,
+                    samples_per_epoch = len(train_samples) * 6,
                     validation_data = validation_generator, 
                     nb_val_samples = len(validation_samples), 
                     nb_epoch = epochs)

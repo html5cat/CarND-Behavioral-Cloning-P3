@@ -35,6 +35,8 @@ def generator(samples, batch_size = 32):
                 for i in range(3):
                     file_path = './data/IMG/' + batch_sample[i].split('/')[-1]
                     image = cv2.imread(file_path)
+                    b,g,r = cv2.split(image)
+                    image = cv2.merge([r,g,b])
                     if image is not None:
                         angle = float(line[3]) + correction_dict[i]
                         images.append(image)

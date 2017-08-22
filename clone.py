@@ -32,11 +32,11 @@ def generator(samples, batch_size = 32):
 
             images, angles = [], []
             for batch_sample in batch_samples:
-                for i in range(3):
-                    file_path = './data/IMG/' + batch_sample[i].split('/')[-1]
+                # for i in range(3):
+                    file_path = './data/IMG/' + batch_sample[0].split('/')[-1]
                     image = cv2.imread(file_path)
                     if image is not None:
-                        angle = float(line[3]) + correction_dict[i]
+                        angle = float(line[3])# + correction_dict[i]
                         images.append(image)
                         angles.append(angle)
                         images.append(cv2.flip(image, 1))
@@ -67,7 +67,7 @@ model.add(Dense(1))
 
 model.compile(loss='mse', optimizer='adam')
 model.fit_generator(train_generator, 
-                    samples_per_epoch = len(train_samples) * 6,
+                    samples_per_epoch = len(train_samples) * 2,
                     validation_data = validation_generator, 
                     nb_val_samples = len(validation_samples), 
                     nb_epoch = epochs)

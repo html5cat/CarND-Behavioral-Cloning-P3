@@ -1,3 +1,4 @@
 /run*/
 data*.zip
 model.h5
+/training-data/

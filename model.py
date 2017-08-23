@@ -8,6 +8,9 @@ from keras.models import Sequential
 from keras.layers import Flatten, Dense, Lambda, Cropping2D, Convolution2D
 
 epochs = 1
+# Steering offset for views from left side and right side.
+# This appeared to be crucial in the model training.
+# Started with 0.2 and the model didn't work until 0.4.
 correction_dict = {
     0 : 0,
     1: 0.4,
